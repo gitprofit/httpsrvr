@@ -10,11 +10,12 @@
 
 namespace Net
 {
-	class HttpRequest
-	{
-		//
-	};
-}
 
+class HttpRequest
+{
+	//
+};
+
+}
 
 #endif /* HTTPREQUEST_HPP_ */
