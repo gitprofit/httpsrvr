@@ -21,6 +21,8 @@
 #include <unistd.h>
 
 #include "Logger.hpp"
+#include "Net/HttpRequest.hpp"
+#include "Net/Socket.hpp"
 
 void testSocket()
 {

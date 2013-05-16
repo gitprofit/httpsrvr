@@ -12,7 +12,9 @@ namespace Net
 {
 	class Socket
 	{
-		//
+	public:
+
+		void accept();
 	};
 }
 
