@@ -14,5 +14,6 @@ int main() {
 		std::cout << "test: " << i << "\n";
 
 	std::cout << "koniec!\n";
+	std::cout << "test2\n";
 	return 0;
 }
