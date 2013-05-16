@@ -7,24 +7,11 @@
 //============================================================================
 
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <iterator>
-
-/*
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-*/
+#include <cstdlib>
 
 #include "Logger.hpp"
-#include "Net/HttpRequest.hpp"
 #include "Net/Socket.hpp"
+#include "Net/Connection.hpp"
 
 
 int main()
@@ -34,10 +21,10 @@ int main()
 	try
 	{
 		Net::Socket sock = Net::Socket(1100);
-		std::string req = sock.accept();
-		sock.close();
+		Net::Connection conn = sock.accept();
 
-		std::cout << req;
+		conn.close();
+		sock.close();
 	}
 	catch(Net::NetException& ex)
 	{

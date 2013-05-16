@@ -17,6 +17,7 @@
 #include <cstring>
 
 #include "NetException.hpp"
+#include "Connection.hpp"
 
 namespace Net
 {
@@ -65,26 +66,14 @@ public:
 		::close(sockFD);
 	}
 
-	std::string accept()
+	Connection accept()
 	{
 		int connFD = ::accept(sockFD, nullptr, nullptr);
 
 		if (connFD < 0)
 			throw NetException("Socket::accept()", "accept()");
 
-		char buff[1024];
-		int size = read(connFD, buff, sizeof(buff));
-		std::string result(buff, size);
-
-		std::string msg = "<html><body><h1>Server works!</h1></body></html>";
-		write(connFD, msg.c_str(), msg.size());
-
-		int shutdownResult = shutdown(connFD, SHUT_RDWR);
-
-		if (shutdownResult == -1)
-			throw NetException("Socket::accept()", "shutdown()");
-
-		return result;
+		return Connection(connFD);
 	}
 };
 
