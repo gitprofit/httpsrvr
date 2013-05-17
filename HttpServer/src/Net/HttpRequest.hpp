@@ -8,12 +8,29 @@
 #ifndef HTTPREQUEST_HPP_
 #define HTTPREQUEST_HPP_
 
+#include "HttpMethod.hpp"
+
 namespace Net
 {
 
 class HttpRequest
 {
-	//
+private:
+
+	HttpMethod method;
+	std::string URI;
+
+public:
+
+	HttpMethod getMethod()
+	{
+		return method;
+	}
+
+	std::string getURI()
+	{
+		return URI;
+	}
 };
 
 }
