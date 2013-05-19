@@ -39,7 +39,8 @@ public:
 			throw NetException("Socket::Socket()", "socket() failed");
 
 		int optReuseAddress = 1;
-		int setsockoptResult = ::setsockopt(sockFD, SOL_SOCKET, SO_REUSEADDR, &optReuseAddress, sizeof(int));
+		int setsockoptResult = ::setsockopt(sockFD, SOL_SOCKET, SO_REUSEADDR,
+				&optReuseAddress, sizeof(int));
 		if (setsockoptResult == -1)
 			throw NetException("Socket::Socket()", "setsockopt() failed");
 

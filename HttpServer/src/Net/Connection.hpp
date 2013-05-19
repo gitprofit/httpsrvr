@@ -59,7 +59,7 @@ public:
 		{
 			std::getline(socketIstream, line);
 
-			line.erase(line.end()-1); // pop '\n'
+			line.erase(line.end() - 1); // pop '\n'
 
 			if (line == "")
 				break;

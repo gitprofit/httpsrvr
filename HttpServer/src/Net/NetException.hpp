@@ -10,23 +10,26 @@
 
 #include <stdexcept>
 #include <cstdio>
+#include <cerrno>
 
 namespace Net
 {
 
-class NetException : public std::runtime_error
+class NetException: public std::runtime_error
 {
 public:
 
-	NetException(std::string message)
-	: std::runtime_error(message.c_str())
+	NetException(std::string message) :
+			std::runtime_error(message.c_str())
 	{
-		::perror("perror");
+		if (errno != 0)
+			::perror("perror");
 	}
 
-	NetException(std::string where, std::string what)
-	: NetException("in " + where + ": " + what)
-	{ }
+	NetException(std::string where, std::string what) :
+			NetException("in " + where + ": " + what)
+	{
+	}
 
 };
 

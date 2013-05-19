@@ -10,8 +10,7 @@
 
 #include <map>
 #include <list>
-
-#include "HttpMethod.hpp"
+#include <sstream>
 
 namespace Net
 {
@@ -22,19 +21,16 @@ class HttpRequest
 
 private:
 
-	HttpMethod method;
+	std::string method;
 	std::string URI;
 	std::map<std::string, std::string> headers;
 
 	HttpRequest(std::list<std::string>& rawRequest)
 	{
-		method = HttpMethod::GET;
-		URI = "/";
-
-		rawRequest.pop_front();
+		setMethodAndURI(rawRequest.front());
 		rawRequest.pop_front();
 
-		for(auto& line : rawRequest)
+		for (auto& line : rawRequest)
 		{
 			auto start = line.find(": ");
 
@@ -45,9 +41,16 @@ private:
 		}
 	}
 
+	void setMethodAndURI(const std::string& requestLine)
+	{
+		std::istringstream iss(requestLine);
+		iss >> method;
+		iss >> URI;
+	}
+
 public:
 
-	HttpMethod getMethod()
+	std::string getMethod()
 	{
 		return method;
 	}
@@ -61,8 +64,9 @@ public:
 	{
 		auto it = headers.find(headerName);
 
-		if(it == headers.end())
-			throw NetException("HttpRequest::operator[]", "header '" + headerName + "' not found");
+		if (it == headers.end())
+			throw NetException("HttpRequest::operator[]",
+					"header '" + headerName + "' not found");
 
 		return it->second;
 	}
