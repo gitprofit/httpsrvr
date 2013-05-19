@@ -16,56 +16,71 @@
 #include <streambuf>
 #include <unistd.h>
 
-namespace
-{
 
-class UnixStreambuf: public std::streambuf
+class UnixStreambuf : public std::streambuf
 {
+	friend class UnixIstreamAdapter;
+
 private:
 
 	int streamFD;
 
 	char currentChar;
 	int bytesRead;
-
-	void next()
-	{
-		bytesRead = ::read(streamFD, &currentChar, 1);
-	}
-
-public:
+	int stopc;
 
 	UnixStreambuf(int unixFileDescriptor)
 	{
 		streamFD = unixFileDescriptor;
+		stopc = 0;
 		next();
 	}
 
-	int_type underflow()
+	void next()
 	{
-		if(bytesRead == 0) return traits_type::eof();
+		bytesRead = ::read(streamFD, &currentChar, 1);
+
+		if(currentChar != '\r' && currentChar != '\n') stopc = 0;
+		else stopc++;
+	}
+
+	virtual int_type underflow()
+	{
+		if(stopc > 3) return traits_type::eof();
 	    return traits_type::to_int_type(currentChar);
 	}
 
-	int_type uflow()
+	virtual int_type uflow()
 	{
-		if(bytesRead == 0) return traits_type::eof();
+		if(stopc > 3) return traits_type::eof();
 		char tmp = currentChar;
 		next();
 	    return traits_type::to_int_type(tmp);
 	}
 
-	int_type pbackfail(int_type)
+	virtual int_type pbackfail(int_type)
 	{
 		return traits_type::eof();
 	}
 
-	std::streamsize showmanyc()
+	virtual std::streamsize showmanyc()
 	{
 	    return 0;
 	}
 };
 
-}
+
+class UnixIstreamAdapter : public std::istream
+{
+
+private:
+
+	UnixStreambuf sb;
+
+public:
+
+	UnixIstreamAdapter(int unixFileDescriptor)
+	: std::istream(&sb), sb(unixFileDescriptor) { }
+};
 
 #endif /* UNIXISTREAMADAPTER_HPP_ */

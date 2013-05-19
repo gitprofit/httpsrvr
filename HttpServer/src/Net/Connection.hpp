@@ -12,6 +12,7 @@
 
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+#include "../UnixIstreamAdapter.hpp"
 
 namespace Net
 {
@@ -29,35 +30,6 @@ private:
 		this->connFD = connFD;
 	}
 
-	std::string readRequestLine()
-	{
-		std::string result = "";
-
-		for(;;)
-		{
-			char c = get();
-
-			if(c == '\r')
-			{
-				// consume '\n'
-				c = get();
-				if(c != '\n')
-					throw NetException("Connection::readRequestLine()", "invalid request format");
-				else break;
-			}
-			else result.append(&c, 1);
-		}
-
-		return result;
-	}
-
-	char get()
-	{
-		char c;
-		::read(connFD, &c, 1);
-		return c;
-	}
-
 public:
 
 	void close()
@@ -65,7 +37,9 @@ public:
 		int shutdownResult = shutdown(connFD, SHUT_RDWR);
 
 		if (shutdownResult == -1)
+		{
 			throw NetException("Connection::close()", "shutdown() failed");
+		}
 	}
 
 	virtual ~Connection()
@@ -76,23 +50,25 @@ public:
 	HttpRequest read()
 	{
 		HttpRequest request;
+		std::string line;
 
-		char buff[2048];
-		::read(connFD, buff,2048);
-		std::cout << std::string(buff, 2048);
+		UnixIstreamAdapter socketIstream(connFD);
 
-		return request;
+		std::getline(socketIstream, line); // METHOD
+		std::getline(socketIstream, line); // URI
 
-		std::string line = readRequestLine();
-
-		// set method / URI
-
-		while((line = readRequestLine()) != "")
+		for (;;)
 		{
+			std::getline(socketIstream, line);
+			line.pop_back(); // pop '\n'
+
+			if (line == "")
+				break;
+
 			auto start = line.find(": ");
 
 			std::string name = line.substr(0, start);
-			std::string value = line.substr(start+2);
+			std::string value = line.substr(start + 2);
 
 			request.addHeader(name, value);
 		}

@@ -40,7 +40,7 @@ int main()
 		Net::HttpRequest req = conn.read();
 
 		std::cout << req["User-Agent"] << "\n";
-
+		std::cout << "here!";
 		conn.close();
 		sock.close();
 	}
