@@ -22,7 +22,7 @@ public:
 	{ }
 
 	NetException(std::string where, std::string what)
-	: NetException("in " + where + ": '" + what + "' failed")
+	: NetException("in " + where + ": " + what)
 	{ }
 
 };

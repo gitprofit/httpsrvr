@@ -36,7 +36,7 @@ public:
 		sockFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 		if (sockFD == -1)
-			throw NetException("Socket::Socket()", "socket()");
+			throw NetException("Socket::Socket()", "socket() failed");
 
 		memset(&sockAddr, 0, sizeof(sockAddr));
 		sockAddr.sin_family = AF_INET;
@@ -47,13 +47,13 @@ public:
 				sizeof(sockAddr));
 
 		if (bindResult == -1)
-			throw NetException("Socket::Socket()", "bind()");
+			throw NetException("Socket::Socket()", "bind() failed");
 
 		// max 10 pending
 		int listenResult = listen(sockFD, 10);
 
 		if (listenResult == -1)
-			throw NetException("Socket::Socket()", "listen()");
+			throw NetException("Socket::Socket()", "listen() failed");
 	}
 
 	void close()
@@ -71,7 +71,7 @@ public:
 		int connFD = ::accept(sockFD, nullptr, nullptr);
 
 		if (connFD < 0)
-			throw NetException("Socket::accept()", "accept()");
+			throw NetException("Socket::accept()", "accept() failed");
 
 		return Connection(connFD);
 	}
