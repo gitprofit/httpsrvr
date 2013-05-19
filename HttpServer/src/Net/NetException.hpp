@@ -9,6 +9,7 @@
 #define NETEXCEPTION_HPP_
 
 #include <stdexcept>
+#include <cstdio>
 
 namespace Net
 {
@@ -19,7 +20,9 @@ public:
 
 	NetException(std::string message)
 	: std::runtime_error(message.c_str())
-	{ }
+	{
+		::perror("perror");
+	}
 
 	NetException(std::string where, std::string what)
 	: NetException("in " + where + ": " + what)

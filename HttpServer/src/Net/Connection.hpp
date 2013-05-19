@@ -8,7 +8,8 @@
 #ifndef CONNECTION_HPP_
 #define CONNECTION_HPP_
 
-#include <sstream>
+#include <string>
+#include <list>
 
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
@@ -34,7 +35,7 @@ public:
 
 	void close()
 	{
-		int shutdownResult = shutdown(connFD, SHUT_RDWR);
+		int shutdownResult = ::shutdown(connFD, SHUT_RDWR);
 
 		if (shutdownResult == -1)
 		{
@@ -49,31 +50,24 @@ public:
 
 	HttpRequest read()
 	{
-		HttpRequest request;
+		std::list<std::string> rawRequest;
 		std::string line;
 
 		UnixIstreamAdapter socketIstream(connFD);
 
-		std::getline(socketIstream, line); // METHOD
-		std::getline(socketIstream, line); // URI
-
 		for (;;)
 		{
 			std::getline(socketIstream, line);
-			line.pop_back(); // pop '\n'
+
+			line.erase(line.end()-1); // pop '\n'
 
 			if (line == "")
 				break;
 
-			auto start = line.find(": ");
-
-			std::string name = line.substr(0, start);
-			std::string value = line.substr(start + 2);
-
-			request.addHeader(name, value);
+			rawRequest.push_back(line);
 		}
 
-		return request;
+		return HttpRequest(rawRequest);
 	}
 
 	void write(HttpResponse response)

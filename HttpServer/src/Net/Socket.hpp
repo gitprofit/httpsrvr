@@ -33,24 +33,29 @@ public:
 
 	Socket(int port)
 	{
-		sockFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+		sockFD = ::socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 		if (sockFD == -1)
 			throw NetException("Socket::Socket()", "socket() failed");
 
+		int optReuseAddress = 1;
+		int setsockoptResult = ::setsockopt(sockFD, SOL_SOCKET, SO_REUSEADDR, &optReuseAddress, sizeof(int));
+		if (setsockoptResult == -1)
+			throw NetException("Socket::Socket()", "setsockopt() failed");
+
 		memset(&sockAddr, 0, sizeof(sockAddr));
 		sockAddr.sin_family = AF_INET;
-		sockAddr.sin_port = htons(port);
-		sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+		sockAddr.sin_port = ::htons(port);
+		sockAddr.sin_addr.s_addr = ::htonl(INADDR_ANY );
 
-		int bindResult = bind(sockFD, (const sockaddr*) &sockAddr,
+		int bindResult = ::bind(sockFD, (const sockaddr*) &sockAddr,
 				sizeof(sockAddr));
 
 		if (bindResult == -1)
 			throw NetException("Socket::Socket()", "bind() failed");
 
 		// max 10 pending
-		int listenResult = listen(sockFD, 10);
+		int listenResult = ::listen(sockFD, 10);
 
 		if (listenResult == -1)
 			throw NetException("Socket::Socket()", "listen() failed");
@@ -63,7 +68,7 @@ public:
 
 	virtual ~Socket()
 	{
-		::close(sockFD);
+		close();
 	}
 
 	Connection accept()

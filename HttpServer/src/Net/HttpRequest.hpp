@@ -8,8 +8,10 @@
 #ifndef HTTPREQUEST_HPP_
 #define HTTPREQUEST_HPP_
 
-#include "HttpMethod.hpp"
 #include <map>
+#include <list>
+
+#include "HttpMethod.hpp"
 
 namespace Net
 {
@@ -24,9 +26,23 @@ private:
 	std::string URI;
 	std::map<std::string, std::string> headers;
 
-	void addHeader(std::string name, std::string value)
+	HttpRequest(std::list<std::string>& rawRequest)
 	{
-		headers[name] = value;
+		method = HttpMethod::GET;
+		URI = "/";
+
+		rawRequest.pop_front();
+		rawRequest.pop_front();
+
+		for(auto& line : rawRequest)
+		{
+			auto start = line.find(": ");
+
+			auto name = line.substr(0, start);
+			auto value = line.substr(start + 2);
+
+			headers[name] = value;
+		}
 	}
 
 public:
@@ -41,7 +57,7 @@ public:
 		return URI;
 	}
 
-	std::string operator[](std::string headerName)
+	std::string operator[](const std::string& headerName)
 	{
 		auto it = headers.find(headerName);
 
