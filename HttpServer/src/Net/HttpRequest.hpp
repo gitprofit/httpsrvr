@@ -21,19 +21,14 @@ class HttpRequest
 
 private:
 
-	std::string method;
-	std::string URI;
 	std::map<std::string, std::string> headers;
 	std::map<std::string, std::string> params; //TODO: add params functionality
 
-	HttpRequest(std::list<std::string>& rawRequest)
+	HttpRequest(std::list<std::string>& rawRequest, std::string& rawContent)
 	{
 		std::istringstream iss(rawRequest.front());
-		iss >> method;
-		iss >> URI;
-		headers["Method"] = method;
-		headers["URI"] = URI;
-
+		iss >> headers["Method"];
+		iss >> headers["URI"];
 		rawRequest.pop_front();
 
 		for (auto& line : rawRequest)
@@ -49,16 +44,6 @@ private:
 
 
 public:
-
-	std::string getMethod()
-	{
-		return method;
-	}
-
-	std::string getURI()
-	{
-		return URI;
-	}
 
 	std::string operator[](const std::string& headerName)
 	{

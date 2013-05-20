@@ -50,10 +50,16 @@ public:
 
 	HttpRequest read()
 	{
+		// request parameters
 		std::list<std::string> rawRequest;
-		std::string line;
+		std::string rawContent = "";
+		int contentLength = 0;
 
+		std::string line;
 		SocketIstream socketIstream(connFD);
+
+		std::string contentLengthHeader = "Content-Length: ";
+		std::string contentLengthLine = "";
 
 		for (;;)
 		{
@@ -64,28 +70,26 @@ public:
 			if (line == "")
 				break;
 
+			if(line.find(contentLengthHeader) != std::string::npos)
+				contentLengthLine = line;
+
 			rawRequest.push_back(line);
 		}
 
-		// Request contents
-
-		std::string clHeader = "Content-Length: ";
-		auto it = std::find_if(rawRequest.begin(), rawRequest.end(),
-				[&](std::string& s) { return s.find(clHeader) != std::string::npos; });
-
-		if(it != rawRequest.end())
+		// request content
+		if(contentLengthLine != "")
 		{
-			std::string clStr = (*it).substr(clHeader.size());
-			std::istringstream iss(clStr);
-			int contentLength;
-			iss >> contentLength;
+			contentLength =
+					::atoi(contentLengthLine.substr(contentLengthHeader.size()).c_str());
 
-			char* buff = new char[contentLength];
-			int size = ::read(connFD, buff, contentLength);
-			std::string content(buff, size);
+			rawContent.resize(contentLength);
+			::read(connFD, &rawContent[0], contentLength);
+
+			std::cout << "Content-Length: " << contentLength << "\n";
+			std::cout << "Content: " << rawContent << "\n";
 		}
 
-		return HttpRequest(rawRequest);
+		return HttpRequest(rawRequest, rawContent);
 	}
 
 	void write(HttpResponse response)

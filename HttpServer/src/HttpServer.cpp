@@ -26,10 +26,7 @@ int main()
 
 		Net::HttpRequest req = conn.read();
 
-		std::cout << req.getURI() << "\n";
-		std::cout << req["URI"] << "\n";
-		std::cout << req["User-Agent"] << "\n";
-		std::cout << "here!";
+		std::cout << "connection closed!\n";
 		conn.close();
 		sock.close();
 	} catch (Net::NetException& ex)
