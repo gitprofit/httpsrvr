@@ -10,10 +10,12 @@
 
 #include <string>
 #include <list>
+#include <algorithm>
+#include <memory>
 
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "../UnixIstreamAdapter.hpp"
+#include "SocketIstream.hpp"
 
 namespace Net
 {
@@ -38,9 +40,7 @@ public:
 		int shutdownResult = ::shutdown(connFD, SHUT_RDWR);
 
 		if (shutdownResult == -1)
-		{
 			throw NetException("Connection::close()", "shutdown() failed");
-		}
 	}
 
 	virtual ~Connection()
@@ -53,7 +53,7 @@ public:
 		std::list<std::string> rawRequest;
 		std::string line;
 
-		UnixIstreamAdapter socketIstream(connFD);
+		SocketIstream socketIstream(connFD);
 
 		for (;;)
 		{
@@ -65,6 +65,24 @@ public:
 				break;
 
 			rawRequest.push_back(line);
+		}
+
+		// Request contents
+
+		std::string clHeader = "Content-Length: ";
+		auto it = std::find_if(rawRequest.begin(), rawRequest.end(),
+				[&](std::string& s) { return s.find(clHeader) != std::string::npos; });
+
+		if(it != rawRequest.end())
+		{
+			std::string clStr = (*it).substr(clHeader.size());
+			std::istringstream iss(clStr);
+			int contentLength;
+			iss >> contentLength;
+
+			char* buff = new char[contentLength];
+			int size = ::read(connFD, buff, contentLength);
+			std::string content(buff, size);
 		}
 
 		return HttpRequest(rawRequest);

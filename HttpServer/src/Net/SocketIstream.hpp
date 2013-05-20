@@ -1,12 +1,12 @@
 /*
- * UnixIstreamAdapter.hpp
+ * SocketIstreamAdapter.hpp
  *
  *  Created on: May 19, 2013
  *      Author: michal
  */
 
-#ifndef UNIXISTREAMADAPTER_HPP_
-#define UNIXISTREAMADAPTER_HPP_
+#ifndef SOCKETISTREAM_HPP_
+#define SOCKETISTREAM_HPP_
 
 /*
  * http://artofcode.wordpress.com/2010/12/12/deriving-from-stdstreambuf/
@@ -16,9 +16,12 @@
 #include <streambuf>
 #include <unistd.h>
 
-class UnixStreambuf: public std::streambuf
+namespace Net
 {
-	friend class UnixIstreamAdapter;
+
+class SocketStreambuf: public std::streambuf
+{
+	friend class SocketIstream;
 
 private:
 
@@ -27,7 +30,7 @@ private:
 	char currentChar;
 	int stopc;
 
-	UnixStreambuf(int unixFileDescriptor)
+	SocketStreambuf(int unixFileDescriptor)
 	{
 		streamFD = unixFileDescriptor;
 		stopc = 0;
@@ -71,17 +74,19 @@ private:
 	}
 };
 
-class UnixIstreamAdapter: public std::istream
+class SocketIstream: public std::istream
 {
 
 private:
 
-	UnixStreambuf sb;
+	SocketStreambuf sb;
 
 public:
 
-	UnixIstreamAdapter(int unixFileDescriptor) :
+	SocketIstream(int unixFileDescriptor) :
 	std::istream(&sb), sb(unixFileDescriptor) { }
 };
+
+}
 
 #endif /* UNIXISTREAMADAPTER_HPP_ */

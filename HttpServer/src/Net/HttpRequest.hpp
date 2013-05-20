@@ -24,10 +24,16 @@ private:
 	std::string method;
 	std::string URI;
 	std::map<std::string, std::string> headers;
+	std::map<std::string, std::string> params; //TODO: add params functionality
 
 	HttpRequest(std::list<std::string>& rawRequest)
 	{
-		setMethodAndURI(rawRequest.front());
+		std::istringstream iss(rawRequest.front());
+		iss >> method;
+		iss >> URI;
+		headers["Method"] = method;
+		headers["URI"] = URI;
+
 		rawRequest.pop_front();
 
 		for (auto& line : rawRequest)
@@ -41,12 +47,6 @@ private:
 		}
 	}
 
-	void setMethodAndURI(const std::string& requestLine)
-	{
-		std::istringstream iss(requestLine);
-		iss >> method;
-		iss >> URI;
-	}
 
 public:
 
