@@ -84,9 +84,6 @@ public:
 
 			rawContent.resize(contentLength);
 			::read(connFD, &rawContent[0], contentLength);
-
-			std::cout << "Content-Length: " << contentLength << "\n";
-			std::cout << "Content: " << rawContent << "\n";
 		}
 
 		return HttpRequest(rawRequest, rawContent);

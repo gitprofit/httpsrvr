@@ -40,6 +40,12 @@ private:
 
 			headers[name] = value;
 		}
+
+		// parse parameters
+		if(*this["Method"] == "GET")
+			rawContent = ""; // extract from URI
+
+		//
 	}
 
 
