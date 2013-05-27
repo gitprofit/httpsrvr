@@ -19,16 +19,20 @@ int main()
 
 	try
 	{
-		Net::Socket sock = Net::Socket(1100);
-		Net::Connection conn = sock.accept();
+		Net::Socket socket = Net::Socket(1100);
+		Net::Connection connection = socket.accept();
 
 		std::cout << "got connection!\n";
 
-		Net::HttpRequest req = conn.read();
+		Net::HttpRequest req = connection.read();
+
+		Net::HttpResponse rsp;
+
+		connection.write(rsp);
 
 		std::cout << "connection closed!\n";
-		conn.close();
-		sock.close();
+		connection.close();
+		socket.close();
 	} catch (Net::NetException& ex)
 	{
 		std::cout << ex.what() << "\n";

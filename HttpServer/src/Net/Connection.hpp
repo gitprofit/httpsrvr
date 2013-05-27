@@ -91,7 +91,8 @@ public:
 
 	void write(HttpResponse response)
 	{
-		//::write(connFD, data.c_str(), data.size());
+		std::string data = "HTTP/1.1 404 Not Found\r\nServer: Systemy Operacyjne 2013\r\nContent-Length: 0\r\nConnection: close\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n";
+		::write(connFD, data.c_str(), data.size());
 	}
 };
 

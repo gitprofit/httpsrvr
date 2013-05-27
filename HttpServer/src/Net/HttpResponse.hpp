@@ -13,7 +13,12 @@ namespace Net
 
 class HttpResponse
 {
-	//
+
+private:
+
+	std::string statusCode;
+	std::string contentType;
+	std::string content;
 };
 
 }

@@ -42,7 +42,7 @@ private:
 		}
 
 		// parse parameters
-		if(*this["Method"] == "GET")
+		if((*this)["Method"] == "GET")
 			rawContent = ""; // extract from URI
 
 		//
