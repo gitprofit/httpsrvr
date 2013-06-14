@@ -10,8 +10,8 @@
 #include <cstdlib>
 
 #include "Logger.hpp"
+#include "Net/ServerSocket.hpp"
 #include "Net/Socket.hpp"
-#include "Net/Connection.hpp"
 
 int main()
 {
@@ -19,20 +19,20 @@ int main()
 
 	try
 	{
-		Net::Socket socket = Net::Socket(1100);
-		Net::Connection connection = socket.accept();
+		Net::ServerSocket serverSocket = Net::ServerSocket(1100);
+		Net::Socket socket = serverSocket.accept();
 
 		std::cout << "got connection!\n";
 
-		Net::HttpRequest req = connection.read();
+		Net::HttpRequest req = socket.read();
 
 		Net::HttpResponse rsp;
 
-		connection.write(rsp);
+		socket.write(rsp);
 
 		std::cout << "connection closed!\n";
-		connection.close();
 		socket.close();
+		serverSocket.close();
 	} catch (Net::NetException& ex)
 	{
 		std::cout << ex.what() << "\n";

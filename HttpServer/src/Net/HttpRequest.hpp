@@ -17,7 +17,7 @@ namespace Net
 
 class HttpRequest
 {
-	friend class Connection;
+	friend class Socket;
 
 private:
 

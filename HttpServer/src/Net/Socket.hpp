@@ -1,70 +1,46 @@
 /*
  * Socket.hpp
  *
- *  Created on: May 16, 2013
+ *  Created on: May 17, 2013
  *      Author: michal
  */
 
 #ifndef SOCKET_HPP_
 #define SOCKET_HPP_
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#include <string>
+#include <list>
+#include <algorithm>
+#include <memory>
 
-#include <cstring>
-
-#include "NetException.hpp"
-#include "Connection.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+#include "SocketIstream.hpp"
 
 namespace Net
 {
 
 class Socket
 {
+	friend class ServerSocket;
+
 private:
 
-	sockaddr_in sockAddr;
-	int sockFD;
+	int connFD;
+
+	Socket(int connFD)
+	{
+		this->connFD = connFD;
+	}
 
 public:
 
-	Socket(int port)
-	{
-		sockFD = ::socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-		if (sockFD == -1)
-			throw NetException("Socket::Socket()", "socket() failed");
-
-		int optReuseAddress = 1;
-		int setsockoptResult = ::setsockopt(sockFD, SOL_SOCKET, SO_REUSEADDR,
-				&optReuseAddress, sizeof(int));
-		if (setsockoptResult == -1)
-			throw NetException("Socket::Socket()", "setsockopt() failed");
-
-		memset(&sockAddr, 0, sizeof(sockAddr));
-		sockAddr.sin_family = AF_INET;
-		sockAddr.sin_port = ::htons(port);
-		sockAddr.sin_addr.s_addr = ::htonl(INADDR_ANY );
-
-		int bindResult = ::bind(sockFD, (const sockaddr*) &sockAddr,
-				sizeof(sockAddr));
-
-		if (bindResult == -1)
-			throw NetException("Socket::Socket()", "bind() failed");
-
-		// max 10 pending
-		int listenResult = ::listen(sockFD, 10);
-
-		if (listenResult == -1)
-			throw NetException("Socket::Socket()", "listen() failed");
-	}
-
 	void close()
 	{
-		::close(sockFD);
+		int shutdownResult = ::shutdown(connFD, SHUT_RDWR);
+
+		if (shutdownResult == -1)
+			throw NetException("Socket::close()", "shutdown() failed");
 	}
 
 	virtual ~Socket()
@@ -72,14 +48,51 @@ public:
 		close();
 	}
 
-	Connection accept()
+	HttpRequest read()
 	{
-		int connFD = ::accept(sockFD, nullptr, nullptr);
+		// request parameters
+		std::list<std::string> rawRequest;
+		std::string rawContent = "";
+		int contentLength = 0;
 
-		if (connFD < 0)
-			throw NetException("Socket::accept()", "accept() failed");
+		std::string line;
+		SocketIstream socketIstream(connFD);
 
-		return Connection(connFD);
+		std::string contentLengthHeader = "Content-Length: ";
+		std::string contentLengthLine = "";
+
+		for (;;)
+		{
+			std::getline(socketIstream, line);
+
+			line.erase(line.end() - 1); // pop '\n'
+
+			if (line == "")
+				break;
+
+			if(line.find(contentLengthHeader) != std::string::npos)
+				contentLengthLine = line;
+
+			rawRequest.push_back(line);
+		}
+
+		// request content
+		if(contentLengthLine != "")
+		{
+			contentLength =
+					::atoi(contentLengthLine.substr(contentLengthHeader.size()).c_str());
+
+			rawContent.resize(contentLength);
+			::read(connFD, &rawContent[0], contentLength);
+		}
+
+		return HttpRequest(rawRequest, rawContent);
+	}
+
+	void write(HttpResponse response)
+	{
+		std::string data = "HTTP/1.1 404 Not Found\r\nServer: Systemy Operacyjne 2013\r\nContent-Length: 0\r\nConnection: close\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n";
+		::write(connFD, data.c_str(), data.size());
 	}
 };
 
