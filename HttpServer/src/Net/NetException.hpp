@@ -12,25 +12,20 @@
 #include <cstdio>
 #include <cerrno>
 
+#include "../Util/Exception.hpp"
+
 namespace Net
 {
 
-class NetException: public std::runtime_error
+class NetException : public Util::Exception
 {
 public:
 
-	NetException(std::string message) :
-			std::runtime_error(message.c_str())
-	{
-		if (errno != 0)
-			::perror("perror");
-	}
+	NetException(const std::string& message) :
+		Util::Exception(message) { }
 
-	NetException(std::string where, std::string what) :
-			NetException("in " + where + ": " + what)
-	{
-	}
-
+	NetException(const std::string& where, const std::string& what) :
+		Util::Exception(where, what) { }
 };
 
 }

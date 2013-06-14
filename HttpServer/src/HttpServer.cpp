@@ -9,13 +9,21 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "Logger.hpp"
+#include "Util/Logger.hpp"
+#include "Util/Config.hpp"
 #include "Net/ServerSocket.hpp"
 #include "Net/Socket.hpp"
 
 int main()
 {
-	//Logger& logger = Logger::getInstance();
+	//Util::Logger& logger = Util::Logger::get();
+
+	Util::Config& config = Util::Config::get();
+	config.reload("/home/michal/Documents/HttpServer/server.config");
+	std::cout << config["wwwroot"] << "\n";
+
+	HttpRequestFactory requestFactory;
+
 
 	try
 	{
@@ -24,7 +32,9 @@ int main()
 
 		std::cout << "got connection!\n";
 
-		Net::HttpRequest req = socket.read();
+		Net::HttpRequest req = socket.read(requestFactory);
+
+		std::cout << req["Method"] << "\n" << req["URI"] << "\n" <<req["User-Agent"] << "\n";
 
 		Net::HttpResponse rsp;
 

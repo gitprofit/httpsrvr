@@ -8,6 +8,9 @@
 #ifndef LOGGER_HPP_
 #define LOGGER_HPP_
 
+namespace Util
+{
+
 class Logger
 {
 private:
@@ -18,17 +21,18 @@ private:
 
 public:
 
-	static Logger& getInstance()
+	static Logger& get()
 	{
 		static Logger instance;
-
 		return instance;
 	}
 
-	void log(std::string message)
+	void log(const std::string& message)
 	{
 		std::cout << "logger: " << message << "\n";
 	}
 };
+
+}
 
 #endif /* LOGGER_HPP_ */

@@ -11,43 +11,25 @@
 #include <map>
 #include <list>
 #include <sstream>
+#include <utility>
+
+#include "HttpRequestFactory.hpp"
 
 namespace Net
 {
 
 class HttpRequest
 {
-	friend class Socket;
+	friend class HttpRequestFactory;
 
 private:
 
 	std::map<std::string, std::string> headers;
 	std::map<std::string, std::string> params; //TODO: add params functionality
 
-	HttpRequest(std::list<std::string>& rawRequest, std::string& rawContent)
-	{
-		std::istringstream iss(rawRequest.front());
-		iss >> headers["Method"];
-		iss >> headers["URI"];
-		rawRequest.pop_front();
-
-		for (auto& line : rawRequest)
-		{
-			auto start = line.find(": ");
-
-			auto name = line.substr(0, start);
-			auto value = line.substr(start + 2);
-
-			headers[name] = value;
-		}
-
-		// parse parameters
-		if((*this)["Method"] == "GET")
-			rawContent = ""; // extract from URI
-
-		//
-	}
-
+	HttpRequest() = default;
+	HttpRequest(const HttpRequest&) = delete;
+	HttpRequest& operator=(const HttpRequest&) = delete;
 
 public:
 

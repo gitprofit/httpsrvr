@@ -1,5 +1,5 @@
 /*
- * SocketIstreamAdapter.hpp
+ * SocketIstream.hpp
  *
  *  Created on: May 19, 2013
  *      Author: michal
@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <streambuf>
+#include <string>
 #include <unistd.h>
 
 namespace Net
@@ -27,39 +28,57 @@ private:
 
 	int streamFD;
 
-	char currentChar;
-	int stopc;
+	char currChar;
+	char nextChar;
+
+	bool isEOS;
 
 	SocketStreambuf(int unixFileDescriptor)
 	{
 		streamFD = unixFileDescriptor;
-		stopc = 0;
+		isEOS = false;
+
+		nextChar = peek();
 		next();
+	}
+
+	char peek()
+	{
+		char c;
+
+		// line separator: \r\n, EOS = \r\n\r\n
+
+		// discard all \r
+		do { ::read(streamFD, &c, 1); }
+		while(c == '\r');
+
+		// now: \n\n = EOS
+
+		return c;
 	}
 
 	void next()
 	{
-		::read(streamFD, &currentChar, 1);
+		currChar = nextChar;
+		nextChar = peek();
 
-		if (currentChar != '\r' && currentChar != '\n')
-			stopc = 0;
-		else
-			stopc++;
+		if(currChar == '\n' && nextChar == '\n') isEOS = true;
 	}
 
 	virtual int_type underflow()
 	{
-		if (stopc > 3) return traits_type::eof();
-
-		return traits_type::to_int_type(currentChar);
+		if (isEOS) return traits_type::eof();
+		return traits_type::to_int_type(currChar);
 	}
 
 	virtual int_type uflow()
 	{
-		if (stopc > 3) return traits_type::eof();
+		if (isEOS) return traits_type::eof();
 
-		char tmp = currentChar;
+		char tmp = currChar;
 		next();
+
+		if (isEOS) return traits_type::eof();
 		return traits_type::to_int_type(tmp);
 	}
 
@@ -89,4 +108,4 @@ public:
 
 }
 
-#endif /* UNIXISTREAMADAPTER_HPP_ */
+#endif /* SOCKETISTREAM_HPP_ */
