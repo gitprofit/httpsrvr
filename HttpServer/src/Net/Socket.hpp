@@ -43,8 +43,8 @@ public:
 	{
 		int shutdownResult = ::shutdown(sockFD, SHUT_RDWR);
 
-		if (shutdownResult == -1)
-			throw NetException("Socket::close()", "shutdown() failed");
+		//if (shutdownResult == -1)
+			//throw NetException("Socket::close()", "shutdown() failed");
 	}
 
 	virtual ~Socket()

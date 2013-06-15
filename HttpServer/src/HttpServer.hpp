@@ -76,7 +76,7 @@ public:
 						fileManager,
 						config, logger);
 
-				requestHandler->run();
+				requestHandler->start();
 			}
 			catch(Util::Exception& ex)
 			{
