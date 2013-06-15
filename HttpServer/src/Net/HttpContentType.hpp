@@ -13,25 +13,21 @@
 #include <memory>
 #include <initializer_list>
 
+#include "../Util/Enum.hpp"
+
 namespace Net
 {
 
-class HttpContentType
+class HttpContentType : public Util::Enum<HttpContentType>
 {
 private:
 
-	const std::string MIME;
 	const std::vector<std::string> extensions;
 
 	HttpContentType(const std::string& MIME, const std::initializer_list<std::string>& extensions) :
-		MIME(MIME), extensions(extensions) { }
+		Enum(MIME), extensions(extensions) { }
 
 public:
-
-	const std::string& toString() const
-	{
-		return MIME;
-	}
 
 	static const std::shared_ptr<HttpContentType> TextHtml;
 	static const std::shared_ptr<HttpContentType> TextXml;

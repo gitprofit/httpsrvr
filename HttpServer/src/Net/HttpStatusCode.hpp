@@ -12,24 +12,19 @@
 #include <vector>
 #include <memory>
 
+#include "../Util/Enum.hpp"
+
 namespace Net
 {
 
-class HttpStatusCode
+class HttpStatusCode : public Util::Enum<HttpStatusCode>
 {
 private:
 
-	const std::string stringForm;
-
 	HttpStatusCode(const std::string& stringForm) :
-		stringForm(stringForm) { }
+		Enum(stringForm) { }
 
 public:
-
-	const std::string& toString() const
-	{
-		return stringForm;
-	}
 
 	static const std::shared_ptr<HttpStatusCode> OK;
 	static const std::shared_ptr<HttpStatusCode> NotFound;

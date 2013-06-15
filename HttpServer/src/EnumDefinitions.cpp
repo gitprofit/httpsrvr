@@ -5,11 +5,27 @@
  *      Author: michal
  */
 
+//#include "Util/Enum.hpp"
+
+#include "Net/HttpMethod.hpp"
 #include "Net/HttpStatusCode.hpp"
 #include "Net/HttpContentType.hpp"
 
 namespace Net
 {
+	/*
+	 * HttpMethod
+	 */
+
+	const std::shared_ptr<HttpMethod> HttpMethod::GET	(new HttpMethod("GET"));
+	const std::shared_ptr<HttpMethod> HttpMethod::POST	(new HttpMethod("POST"));
+	const std::vector< std::shared_ptr<HttpMethod> > HttpMethod::values =
+	{
+			HttpMethod::GET,
+			HttpMethod::POST
+	};
+
+
 	/*
 	 * HttpStatusCode
 	 */

@@ -21,8 +21,11 @@
 #include "Net/HttpRequestFactory.hpp"
 #include "Net/HttpResponseFactory.hpp"
 
+#include "Net/HttpMethod.hpp"
 #include "Net/HttpStatusCode.hpp"
 #include "Net/HttpContentType.hpp"
+
+#include "Util/Enum.hpp"
 
 
 class HttpServer
@@ -57,8 +60,31 @@ public:
 
 		for(auto code : Net::HttpContentType::values)
 		{
-			logger->log(code->toString());
+			//logger->log(code->toString());
 		}
+/*
+		for(auto code : Net::HttpMethod2::values)
+			logger->log(code->toString());
+
+		logger->log("first: " + Net::HttpMethod2::fromString("GET")->toString());
+
+		for(auto code : Net::HttpStatusCode2::values)
+			logger->log(code->toString());
+
+		logger->log("second: " + Net::HttpStatusCode2::fromString("404 Not Found")->toString());
+
+		for(auto code : Net::HttpMethod2::values)
+			logger->log(code->toString());
+
+		logger->log("third: " + Net::HttpMethod2::fromString("GET")->toString());
+*/
+
+		for(auto code : Net::HttpMethod::values)
+			logger->log(code->toString());
+
+		logger->log("third: " + Net::HttpMethod::fromString("GET")->toString());
+
+		return;
 
 		try
 		{
