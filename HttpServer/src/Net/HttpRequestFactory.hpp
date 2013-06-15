@@ -13,6 +13,7 @@
 
 #include "SocketIstream.hpp"
 #include "HttpRequest.hpp"
+#include "HttpMethod.hpp"
 
 namespace Net
 {
@@ -37,6 +38,7 @@ public:
 		std::istringstream iss(line);
 		iss >> request->headers["Method"];
 		iss >> request->headers["URI"];
+		request->method = HttpMethod::fromString(request->headers["Method"]);
 
 		while(std::getline(socketStream, line))
 		{

@@ -14,13 +14,14 @@
 #include <memory>
 
 #include "HttpRequestFactory.hpp"
+#include "HttpResponse.hpp"
 
 namespace Net
 {
 
 // references
 class HttpRequest;
-class HttpResponse;
+//class HttpResponse;
 
 
 class Socket
@@ -58,7 +59,7 @@ public:
 
 	void write(std::shared_ptr<HttpResponse> response)
 	{
-		std::string data = "HTTP/1.1 404 Not Found\r\nServer: Systemy Operacyjne 2013\r\nContent-Length: 0\r\nConnection: close\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n";
+		std::string data = response->toString();
 		::write(sockFD, data.c_str(), data.size());
 	}
 };

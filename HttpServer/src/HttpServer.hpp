@@ -27,6 +27,9 @@
 
 #include "Util/Enum.hpp"
 
+#include "File/FileManager.hpp"
+#include "File/File.hpp"
+
 
 class HttpServer
 {
@@ -38,6 +41,8 @@ private:
 	std::shared_ptr<Net::HttpRequestFactory> requestFactory;
 	std::shared_ptr<Net::HttpResponseFactory> responseFactory;
 
+	std::shared_ptr<File::FileManager> fileManager;
+
 	std::shared_ptr<Util::Config> config;
 	std::shared_ptr<Util::Logger> logger;
 
@@ -46,45 +51,16 @@ public:
 	HttpServer(std::shared_ptr<Util::Config> config, std::shared_ptr<Util::Logger> logger) :
 		config(config), logger(logger)
 	{
+		serverSocket	= std::make_shared<Net::ServerSocket>(1100);
 		requestFactory	= std::make_shared<Net::HttpRequestFactory>();
 		responseFactory	= std::make_shared<Net::HttpResponseFactory>();
-		serverSocket	= std::make_shared<Net::ServerSocket>(1100);
+		fileManager		= std::make_shared<File::FileManager>((*config)["wwwroot"]);
 	}
 
 	void run()
 	{
 		logger->log("HttpServer start!");
 		logger->log("Root dir: " + (*config)["wwwroot"]);
-
-		//logger->log(Net::HttpStatusCode::OK->toString());
-
-		for(auto code : Net::HttpContentType::values)
-		{
-			//logger->log(code->toString());
-		}
-/*
-		for(auto code : Net::HttpMethod2::values)
-			logger->log(code->toString());
-
-		logger->log("first: " + Net::HttpMethod2::fromString("GET")->toString());
-
-		for(auto code : Net::HttpStatusCode2::values)
-			logger->log(code->toString());
-
-		logger->log("second: " + Net::HttpStatusCode2::fromString("404 Not Found")->toString());
-
-		for(auto code : Net::HttpMethod2::values)
-			logger->log(code->toString());
-
-		logger->log("third: " + Net::HttpMethod2::fromString("GET")->toString());
-*/
-
-		for(auto code : Net::HttpMethod::values)
-			logger->log(code->toString());
-
-		logger->log("third: " + Net::HttpMethod::fromString("GET")->toString());
-
-		return;
 
 		try
 		{
@@ -96,8 +72,8 @@ public:
 
 			std::cout << (*req)["Method"] << "\n" << (*req)["URI"] << "\n" << (*req)["User-Agent"] << "\n";
 
-			std::string s = "";
-			auto rsp = responseFactory->create(404, s);
+			auto f = fileManager->getFile("/index.html");
+			auto rsp = responseFactory->fromFile(Net::HttpStatusCode::OK, f);
 
 			socket->write(rsp);
 

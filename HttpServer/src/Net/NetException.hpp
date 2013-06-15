@@ -8,9 +8,7 @@
 #ifndef NETEXCEPTION_HPP_
 #define NETEXCEPTION_HPP_
 
-#include <stdexcept>
-#include <cstdio>
-#include <cerrno>
+#include <string>
 
 #include "../Util/Exception.hpp"
 

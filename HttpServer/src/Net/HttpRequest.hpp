@@ -18,6 +18,7 @@ namespace Net
 
 // references
 class HttpRequestFactory;
+class HttpMethod;
 
 class HttpRequest
 {
@@ -25,6 +26,7 @@ class HttpRequest
 
 private:
 
+	std::shared_ptr<HttpMethod> method;
 	std::map<std::string, std::string> headers;
 	std::map<std::string, std::string> params; //TODO: add params functionality
 
