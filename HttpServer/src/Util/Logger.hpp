@@ -8,28 +8,24 @@
 #ifndef LOGGER_HPP_
 #define LOGGER_HPP_
 
+#include <iostream>
+
 namespace Util
 {
 
 class Logger
 {
 private:
-
-	Logger() = default;
-	Logger(const Logger&) = delete;
-	Logger& operator=(const Logger&) = delete;
+	std::ostream& os;
 
 public:
 
-	static Logger& get()
-	{
-		static Logger instance;
-		return instance;
-	}
+	Logger(std::ostream& os) :
+		os(os) { }
 
 	void log(const std::string& message)
 	{
-		std::cout << "logger: " << message << "\n";
+		os << "logger: " << message << "\n";
 	}
 };
 

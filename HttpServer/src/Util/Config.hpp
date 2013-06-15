@@ -21,27 +21,17 @@ class Config
 {
 private:
 
-	Config() = default;
-	Config(const Config&) = delete;
-	Config& operator=(const Config&) = delete;
-
 	std::map<std::string, std::string> settings;
 
 public:
 
-	static Config& get()
-	{
-		static Config instance;
-		return instance;
-	}
-
-	void reload(const std::string& configFile)
+	Config(const std::string& configFile)
 	{
 		settings.clear();
 
 		std::ifstream file(configFile.c_str());
 
-		if(!file) throw Exception("Config::reload()", "file not found");
+		if(!file) throw Exception("Config::Config()", "file not found");
 
 		std::string line;
 

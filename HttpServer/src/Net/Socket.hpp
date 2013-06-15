@@ -51,12 +51,12 @@ public:
 		close();
 	}
 
-	HttpRequest read(HttpRequestFactory& requestFactory)
+	std::shared_ptr<HttpRequest> read(std::shared_ptr<HttpRequestFactory> requestFactory)
 	{
-		return requestFactory.create(sockFD);
+		return requestFactory->create(sockFD);
 	}
 
-	void write(HttpResponse& response)
+	void write(std::shared_ptr<HttpResponse> response)
 	{
 		std::string data = "HTTP/1.1 404 Not Found\r\nServer: Systemy Operacyjne 2013\r\nContent-Length: 0\r\nConnection: close\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n";
 		::write(sockFD, data.c_str(), data.size());

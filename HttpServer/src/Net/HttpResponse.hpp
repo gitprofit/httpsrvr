@@ -11,8 +11,12 @@
 namespace Net
 {
 
+// references
+class HttpResponseFactory;
+
 class HttpResponse
 {
+	friend class HttpResponseFactory;
 
 private:
 

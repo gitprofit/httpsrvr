@@ -8,6 +8,7 @@
 #ifndef HTTPREQUESTFACTORY_HPP_
 #define HTTPREQUESTFACTORY_HPP_
 
+#include <memory>
 #include <cstdlib>
 
 #include "SocketIstream.hpp"
@@ -21,29 +22,33 @@ class HttpRequestFactory
 
 public:
 
-	HttpRequest create(int rawUglySocketFD)
+	std::shared_ptr<HttpRequest> create(int rawUglySocketFD)
 	{
-		HttpRequest request;
+		// ugly make_shared needs public constructor
+		// otherwise g++ crashes
+		//auto request = std::make_shared<HttpRequest>();
+
+		auto request = std::shared_ptr<HttpRequest>(new HttpRequest());
 
 		std::string line;
 		SocketIstream socketStream(rawUglySocketFD);
 
 		std::getline(socketStream, line);
 		std::istringstream iss(line);
-		iss >> request.headers["Method"];
-		iss >> request.headers["URI"];
+		iss >> request->headers["Method"];
+		iss >> request->headers["URI"];
 
 		while(std::getline(socketStream, line))
 		{
 			auto start = line.find(": ");
 			auto name = line.substr(0, start);
 			auto value = line.substr(start + 2);
-			request.headers[name] = value;
+			request->headers[name] = value;
 		}
 
 		try
 		{
-			auto contentLength = request["Content-Length"]; // throws if not found
+			auto contentLength = (*request)["Content-Length"]; // throws if not found
 			std::string rawContent;
 
 			int size = ::atoi(contentLength.c_str());

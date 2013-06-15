@@ -72,14 +72,14 @@ public:
 		close();
 	}
 
-	Socket accept()
+	std::shared_ptr<Socket> accept()
 	{
 		int connFD = ::accept(sockFD, nullptr, nullptr);
 
 		if (connFD < 0)
 			throw NetException("ServerSocket::accept()", "accept() failed");
 
-		return Socket(connFD);
+		return std::shared_ptr<Socket>(new Socket(connFD));
 	}
 };
 
