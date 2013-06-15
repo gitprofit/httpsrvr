@@ -13,12 +13,15 @@
 #include <algorithm>
 #include <memory>
 
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 #include "HttpRequestFactory.hpp"
 
 namespace Net
 {
+
+// references
+class HttpRequest;
+class HttpResponse;
+
 
 class Socket
 {

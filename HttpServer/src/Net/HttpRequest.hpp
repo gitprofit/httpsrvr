@@ -13,10 +13,11 @@
 #include <sstream>
 #include <utility>
 
-#include "HttpRequestFactory.hpp"
-
 namespace Net
 {
+
+// references
+class HttpRequestFactory;
 
 class HttpRequest
 {
@@ -28,8 +29,6 @@ private:
 	std::map<std::string, std::string> params; //TODO: add params functionality
 
 	HttpRequest() = default;
-	HttpRequest(const HttpRequest&) = delete;
-	HttpRequest& operator=(const HttpRequest&) = delete;
 
 public:
 
