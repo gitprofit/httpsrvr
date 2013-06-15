@@ -22,41 +22,65 @@ private:
 
 	std::shared_ptr<File::FileManager> fileManager;
 
+	std::shared_ptr<Util::Config> config;
+	std::shared_ptr<Util::Logger> logger;
+
 public:
 
 	RequestHandler(
 			std::shared_ptr<Net::Socket> socket,
 			std::shared_ptr<Net::HttpRequestFactory> requestFactory,
 			std::shared_ptr<Net::HttpResponseFactory> responseFactory,
-			std::shared_ptr<File::FileManager> fileManager) :
+			std::shared_ptr<File::FileManager> fileManager,
+			std::shared_ptr<Util::Config> config,
+			std::shared_ptr<Util::Logger> logger) :
 				socket(socket),
 				requestFactory(requestFactory),
 				responseFactory(responseFactory),
-				fileManager(fileManager)
+				fileManager(fileManager),
+				config(config),
+				logger(logger)
 	{
 		//
 	}
 
 	virtual void run()
 	{
+		std::shared_ptr<Net::HttpRequest> request;
+
 		try
 		{
-			auto request = socket->read(requestFactory);
-
-			auto f = fileManager->getFile((*request)["URI"]);
-
-			auto rsp = responseFactory->fromFile(Net::HttpStatusCode::OK, f);
-
-			socket->write(rsp);
-
-			std::cout << "connection closed!\n";
-
-			socket->close();
+			request = socket->read(requestFactory);
 		}
-		catch (Util::Exception& ex)
+		catch(Util::Exception& ex)
 		{
+			logger->log(ex.what());
+
+			auto response = responseFactory->error501();
+			socket->write(response);
 			socket->close();
-			std::cout << ex.what() << "\n";
+			return;
+		}
+
+		std::shared_ptr<File::File> requestedFile;
+		std::shared_ptr<Net::HttpStatusCode> statusCode;
+
+		try
+		{
+			auto requestedFile = fileManager->getFile((*request)["URI"]);
+			auto response = responseFactory->fromFile(Net::HttpStatusCode::OK, requestedFile);
+			socket->write(response);
+			socket->close();
+			return;
+		}
+		catch(Util::Exception& ex)
+		{
+			logger->log(ex.what());
+
+			auto response = responseFactory->error404();
+			socket->write(response);
+			socket->close();
+			return;
 		}
 	}
 };

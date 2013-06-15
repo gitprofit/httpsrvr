@@ -23,9 +23,9 @@ private:
 
 	std::string rootDir;
 
-	bool fileExists(std::shared_ptr<std::string> absolutePath)
+	bool fileExists(const std::string& absolutePath)
 	{
-		std::ifstream file(*absolutePath);
+		std::ifstream file(absolutePath);
 		return file;
 	}
 
@@ -38,7 +38,18 @@ public:
 	{
 		auto absolutePath = std::make_shared<std::string>(rootDir + relativePath);
 
-		if(!fileExists(absolutePath))
+		if((*absolutePath).back() == '/')
+		{
+			// check for defaults: index.html, index.htm, ...
+
+			if(fileExists(*absolutePath + "index.html"))
+				*absolutePath += "index.html";
+
+			else if(fileExists(*absolutePath + "index.htm"))
+				*absolutePath += "index.htm";
+		}
+
+		if(!fileExists(*absolutePath))
 			throw FileException("FileManager::getFile()", "file '" + relativePath + "' not found");
 
 		auto file = std::shared_ptr<File>(new File());

@@ -70,8 +70,13 @@ public:
 			{
 				auto socket = serverSocket->accept();
 
-				auto rq = new RequestHandler(socket, requestFactory, responseFactory, fileManager);
-				rq->run();
+				auto requestHandler = new RequestHandler(
+						socket,
+						requestFactory, responseFactory,
+						fileManager,
+						config, logger);
+
+				requestHandler->run();
 			}
 			catch(Util::Exception& ex)
 			{

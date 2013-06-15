@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include "../Thread/Mutex.hpp"
+
 namespace Util
 {
 
@@ -17,6 +19,7 @@ class Logger
 {
 private:
 	std::ostream& os;
+	Thread::Mutex mutex;
 
 public:
 
@@ -25,7 +28,9 @@ public:
 
 	void log(const std::string& message)
 	{
+		mutex.lock();
 		os << "logger: " << message << "\n";
+		mutex.unlock();
 	}
 };
 
