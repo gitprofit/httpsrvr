@@ -52,7 +52,12 @@ public:
 		logger->log("HttpServer start!");
 		logger->log("Root dir: " + (*config)["wwwroot"]);
 
-		logger->log(Net::HttpStatusCode::OK.toString());
+		//logger->log(Net::HttpStatusCode::OK->toString());
+
+		for(auto code : Net::HttpStatusCode::values())
+		{
+			logger->log(code->toString());
+		}
 
 		try
 		{
