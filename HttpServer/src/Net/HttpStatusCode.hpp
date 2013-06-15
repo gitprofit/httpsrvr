@@ -30,32 +30,12 @@ public:
 	{
 		return stringForm;
 	}
-/*
-	static std::vector<const HttpStatusCode&> values()
-	{
-		std::vector<const HttpStatusCode&> out;
-		out.push_back(HttpStatusCode::OK);
-		out.push_back(HttpStatusCode::NotFound);
-		out.push_back(HttpStatusCode::NotImplemented);
-
-		return out;
-	}
-*/
-	/*
-	static const HttpStatusCode& getOK()
-	{
-		//std::vector<HttpStatusCode&> out;
-		return OK;
-	}*/
 
 	static const std::shared_ptr<HttpStatusCode> OK;
 	static const std::shared_ptr<HttpStatusCode> NotFound;
 	static const std::shared_ptr<HttpStatusCode> NotImplemented;
 
-	static std::vector< std::shared_ptr<HttpStatusCode> > values()
-	{
-		return { OK, NotFound, NotImplemented };
-	}
+	static const std::vector< std::shared_ptr<HttpStatusCode> > values;
 };
 
 }

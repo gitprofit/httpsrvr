@@ -22,6 +22,7 @@
 #include "Net/HttpResponseFactory.hpp"
 
 #include "Net/HttpStatusCode.hpp"
+#include "Net/HttpContentType.hpp"
 
 
 class HttpServer
@@ -54,7 +55,7 @@ public:
 
 		//logger->log(Net::HttpStatusCode::OK->toString());
 
-		for(auto code : Net::HttpStatusCode::values())
+		for(auto code : Net::HttpContentType::values)
 		{
 			logger->log(code->toString());
 		}
