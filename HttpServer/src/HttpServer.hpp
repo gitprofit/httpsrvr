@@ -30,6 +30,8 @@
 #include "File/FileManager.hpp"
 #include "File/File.hpp"
 
+#include "RequestHandler.hpp"
+
 
 class HttpServer
 {
@@ -51,7 +53,7 @@ public:
 	HttpServer(std::shared_ptr<Util::Config> config, std::shared_ptr<Util::Logger> logger) :
 		config(config), logger(logger)
 	{
-		serverSocket	= std::make_shared<Net::ServerSocket>(1100);
+		serverSocket	= std::make_shared<Net::ServerSocket>(8080);
 		requestFactory	= std::make_shared<Net::HttpRequestFactory>();
 		responseFactory	= std::make_shared<Net::HttpResponseFactory>();
 		fileManager		= std::make_shared<File::FileManager>((*config)["wwwroot"]);
@@ -62,29 +64,22 @@ public:
 		logger->log("HttpServer start!");
 		logger->log("Root dir: " + (*config)["wwwroot"]);
 
-		try
+		for(;;)
 		{
-			auto socket = serverSocket->accept();
+			try
+			{
+				auto socket = serverSocket->accept();
 
-			std::cout << "got connection!\n";
-
-			auto req = socket->read(requestFactory);
-
-			std::cout << (*req)["Method"] << "\n" << (*req)["URI"] << "\n" << (*req)["User-Agent"] << "\n";
-
-			auto f = fileManager->getFile("/index.html");
-			auto rsp = responseFactory->fromFile(Net::HttpStatusCode::OK, f);
-
-			socket->write(rsp);
-
-			std::cout << "connection closed!\n";
-			socket->close();
-			serverSocket->close();
+				auto rq = new RequestHandler(socket, requestFactory, responseFactory, fileManager);
+				rq->run();
+			}
+			catch(Util::Exception& ex)
+			{
+				logger->log(ex.what());
+			}
 		}
-		catch (Net::NetException& ex)
-		{
-			std::cout << ex.what() << "\n";
-		}
+
+		serverSocket->close();
 	}
 };
 
