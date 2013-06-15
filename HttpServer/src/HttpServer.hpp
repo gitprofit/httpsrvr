@@ -21,6 +21,8 @@
 #include "Net/HttpRequestFactory.hpp"
 #include "Net/HttpResponseFactory.hpp"
 
+#include "Net/HttpStatusCode.hpp"
+
 
 class HttpServer
 {
@@ -50,6 +52,8 @@ public:
 		logger->log("HttpServer start!");
 		logger->log("Root dir: " + (*config)["wwwroot"]);
 
+		logger->log(Net::HttpStatusCode::OK.toString());
+
 		try
 		{
 			auto socket = serverSocket->accept();
@@ -60,7 +64,8 @@ public:
 
 			std::cout << (*req)["Method"] << "\n" << (*req)["URI"] << "\n" << (*req)["User-Agent"] << "\n";
 
-			auto rsp = std::make_shared<Net::HttpResponse>();
+			std::string s = "";
+			auto rsp = responseFactory->create(404, s);
 
 			socket->write(rsp);
 

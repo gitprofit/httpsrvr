@@ -20,11 +20,14 @@ class HttpResponseFactory
 
 public:
 
-	HttpResponse create()
+	std::shared_ptr<HttpResponse> create(int statusCode, std::string& content)
 	{
+		auto response = std::shared_ptr<HttpResponse>(new HttpResponse());
+		response->statusCode = statusCode;
+		response->content = content;
+		response->contentType = "text/html; charset=UTF-8";
 
-
-		return HttpResponse();
+		return response;
 	}
 };
 

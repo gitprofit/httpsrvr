@@ -20,6 +20,8 @@ class HttpResponse
 
 private:
 
+	HttpResponse() = default;
+
 	std::string statusCode;
 	std::string contentType;
 	std::string content;
