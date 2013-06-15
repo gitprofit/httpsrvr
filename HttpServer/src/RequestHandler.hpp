@@ -31,7 +31,6 @@ public:
 			std::shared_ptr<Net::Socket> socket,
 			std::shared_ptr<Net::HttpRequestFactory> requestFactory,
 			std::shared_ptr<Net::HttpResponseFactory> responseFactory,
-
 			std::shared_ptr<File::FileManager> fileManager,
 			std::shared_ptr<Util::Config> config,
 			std::shared_ptr<Util::Logger> logger) :
@@ -82,26 +81,6 @@ public:
 			socket->write(response);
 			socket->close();
 			return;
-		}
-
-		try
-		{
-			auto request = socket->read(requestFactory);
-
-			auto f = fileManager->getFile((*request)["URI"]);
-
-			auto rsp = responseFactory->fromFile(Net::HttpStatusCode::OK, f);
-
-			socket->write(rsp);
-
-			std::cout << "connection closed!\n";
-
-			socket->close();
-		}
-		catch (Util::Exception& ex)
-		{
-			socket->close();
-			std::cout << ex.what() << "\n";
 		}
 	}
 };

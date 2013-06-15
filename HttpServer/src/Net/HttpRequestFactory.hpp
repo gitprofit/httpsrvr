@@ -35,9 +35,11 @@ public:
 		SocketIstream socketStream(rawUglySocketFD);
 
 		std::getline(socketStream, line);
+
 		std::istringstream iss(line);
 		iss >> request->headers["Method"];
 		iss >> request->headers["URI"];
+
 		request->method = HttpMethod::fromString(request->headers["Method"]);
 
 		while(std::getline(socketStream, line))

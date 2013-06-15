@@ -77,12 +77,6 @@ public:
 						config, logger);
 
 				requestHandler->run();
-				auto rq = new RequestHandler(
-						socket,
-						requestFactory, responseFactory,
-						fileManager,
-						config, logger);
-				rq->run();
 			}
 			catch(Util::Exception& ex)
 			{
