@@ -1,11 +1,9 @@
 /*
- * EnumDefinitions.cpp
+ * Enums.cpp
  *
  *  Created on: Jun 15, 2013
  *      Author: michal
  */
-
-//#include "Util/Enum.hpp"
 
 #include "Net/HttpMethod.hpp"
 #include "Net/HttpStatusCode.hpp"
