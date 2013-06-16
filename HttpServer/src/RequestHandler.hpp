@@ -67,7 +67,7 @@ public:
 
 		try
 		{
-			auto requestedFile = fileManager->getFile((*request)["UR"]);
+			auto requestedFile = fileManager->getFile((*request)["URI"]);
 			auto response = responseFactory->fromFile(Net::HttpStatusCode::OK, requestedFile);
 			socket->write(response);
 			socket->close();
