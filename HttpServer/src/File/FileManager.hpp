@@ -10,9 +10,13 @@
 
 #include <memory>
 #include <fstream>
+#include <vector>
+#include <sstream>
+#include <algorithm>
 
 #include "File.hpp"
 #include "FileException.hpp"
+#include "../Util/Config.hpp"
 
 namespace File
 {
@@ -21,7 +25,9 @@ class FileManager
 {
 private:
 
+	std::shared_ptr<Util::Config> config;
 	std::string rootDir;
+	std::vector<std::string> defaultFiles;
 
 	bool fileExists(const std::string& absolutePath)
 	{
@@ -31,23 +37,28 @@ private:
 
 public:
 
-	FileManager(const std::string& rootDir) :
-		rootDir(rootDir) { }
+	FileManager(std::shared_ptr<Util::Config> config) :
+		config(config)
+	{
+		rootDir = (*config)["wwwroot"];
+		std::istringstream iss((*config)["Default-Files"]);
+		std::istream_iterator<std::string> eos;
+		std::istream_iterator<std::string> it(iss);
+		std::copy(it, eos, std::back_inserter(defaultFiles));
+	}
 
 	std::shared_ptr<File> getFile(const std::string& relativePath)
 	{
 		auto absolutePath = std::make_shared<std::string>(rootDir + relativePath);
 
+		// check for defaults: index.html, index.htm, ...
 		if((*absolutePath).back() == '/')
-		{
-			// check for defaults: index.html, index.htm, ...
-
-			if(fileExists(*absolutePath + "index.html"))
-				*absolutePath += "index.html";
-
-			else if(fileExists(*absolutePath + "index.htm"))
-				*absolutePath += "index.htm";
-		}
+			for(auto& defFile : defaultFiles)
+				if(fileExists(*absolutePath + defFile))
+				{
+					*absolutePath += defFile;
+					break;
+				}
 
 		if(!fileExists(*absolutePath))
 			throw FileException("FileManager::getFile()", "file '" + relativePath + "' not found");

@@ -55,8 +55,8 @@ public:
 	{
 		serverSocket	= std::make_shared<Net::ServerSocket>(8080);
 		requestFactory	= std::make_shared<Net::HttpRequestFactory>();
-		responseFactory	= std::make_shared<Net::HttpResponseFactory>();
-		fileManager		= std::make_shared<File::FileManager>((*config)["wwwroot"]);
+		responseFactory	= std::make_shared<Net::HttpResponseFactory>(config);
+		fileManager		= std::make_shared<File::FileManager>(config);
 	}
 
 	void run()

@@ -15,6 +15,7 @@
 
 #include "HttpResponse.hpp"
 #include "../File/File.hpp"
+#include "../Util/Config.hpp"
 
 namespace Net
 {
@@ -22,7 +23,14 @@ namespace Net
 class HttpResponseFactory
 {
 
+private:
+
+	std::shared_ptr<Util::Config> config;
+
 public:
+
+	HttpResponseFactory(std::shared_ptr<Util::Config> config) :
+		config(config) { }
 
 	std::shared_ptr<HttpResponse> fromString(std::shared_ptr<HttpStatusCode> statusCode,
 			std::shared_ptr<HttpContentType> contentType, std::shared_ptr<std::string> rawContent)
@@ -30,6 +38,7 @@ public:
 		auto response = std::shared_ptr<HttpResponse>(new HttpResponse());
 		response->statusCode = statusCode;
 		response->contentType = contentType;
+		response->serverName = (*config)["Server-Name"];
 		response->rawContent = *rawContent;
 
 		return response;
@@ -46,6 +55,7 @@ public:
 		auto response = std::shared_ptr<HttpResponse>(new HttpResponse());
 		response->statusCode = HttpStatusCode::NotFound;
 		response->contentType = HttpContentType::TextHtml;
+		response->serverName = (*config)["Server-Name"];
 		response->rawContent = "<!DOCTYPE html><html><head><title>404 - Not Found</title></head><body><span style=\"font-size:30px; font-weight:bold;\">Error: 404 - Not Found</span></body></html>";
 
 		return response;
@@ -56,6 +66,7 @@ public:
 		auto response = std::shared_ptr<HttpResponse>(new HttpResponse());
 		response->statusCode = HttpStatusCode::NotImplemented;
 		response->contentType = HttpContentType::TextHtml;
+		response->serverName = (*config)["Server-Name"];
 		response->rawContent = "<!DOCTYPE html><html><head><title>501 - Not Implemented</title></head><body><span style=\"font-size:30px; font-weight:bold;\">Error: 501 - Not Implemented</span></body></html>";
 
 		return response;

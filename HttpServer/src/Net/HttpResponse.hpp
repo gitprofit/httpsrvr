@@ -32,6 +32,7 @@ private:
 
 	std::shared_ptr<HttpStatusCode> statusCode;
 	std::shared_ptr<HttpContentType> contentType;
+	std::string serverName;
 	std::string rawContent;
 
 public:
@@ -50,7 +51,7 @@ public:
 		 */
 
 		oss << "HTTP/1.1 " << statusCode->toString() << "\r\n";
-		oss << "Server: " << "SysOp 2013" << "\r\n";
+		oss << "Server: " << serverName << "\r\n";
 		oss << "ContentLength: " << rawContent.size() << "\r\n";
 		oss << "ContentType: " << contentType->toString() << "\r\n";
 		oss << "\r\n";

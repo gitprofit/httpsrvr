@@ -42,6 +42,15 @@ public:
 
 		request->method = HttpMethod::fromString(request->headers["Method"]);
 
+		if(request->method == HttpMethod::GET)
+		{
+			// remove GET vars
+
+			auto pos = request->headers["URI"].find("?");
+			if(pos != std::string::npos)
+				request->headers["URI"] = request->headers["URI"].substr(0, pos);
+		}
+
 		while(std::getline(socketStream, line))
 		{
 			auto start = line.find(": ");
