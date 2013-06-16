@@ -53,7 +53,9 @@ public:
 	HttpServer(std::shared_ptr<Util::Config> config, std::shared_ptr<Util::Logger> logger) :
 		config(config), logger(logger)
 	{
-		serverSocket	= std::make_shared<Net::ServerSocket>(8080);
+		int port = ::atoi((*config)["Listen-Port"].c_str());
+
+		serverSocket	= std::make_shared<Net::ServerSocket>(port);
 		requestFactory	= std::make_shared<Net::HttpRequestFactory>();
 		responseFactory	= std::make_shared<Net::HttpResponseFactory>(config);
 		fileManager		= std::make_shared<File::FileManager>(config);
