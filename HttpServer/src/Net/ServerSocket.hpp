@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <unistd.h>
 
 #include <cstring>
@@ -46,7 +47,7 @@ public:
 
 		memset(&sockAddr, 0, sizeof(sockAddr));
 		sockAddr.sin_family = AF_INET;
-		sockAddr.sin_port = ::htons(port);
+		sockAddr.sin_port = htons(port);
 		sockAddr.sin_addr.s_addr = ::htonl(INADDR_ANY );
 
 		int bindResult = ::bind(sockFD, (const sockaddr*) &sockAddr,
